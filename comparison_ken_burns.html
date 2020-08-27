@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
+<!--[if lt IE 7 ]> <html class="ie6" lang="en"> <![endif]-->
+<!--[if IE 7 ]>    <html class="ie7" lang="en"> <![endif]-->
+<!--[if IE 8 ]>    <html class="lt-ie9" lang="en"> <![endif]-->
+<!--[if IE 9 ]>    <html class="lt-ie10" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!--> <html lang="en"> <!--<![endif]-->
+<head>
+	<meta charset="UTF-8">
+	<title>Comparison with "3D Ken Burns Effect"</title>
+	<link href="css/foundation.css" rel="stylesheet" type="text/css" />
+	<link href="css/twentytwenty.css" rel="stylesheet" type="text/css" />
+	<!-- jQuery -->
+	<script
+		src="https://code.jquery.com/jquery-3.1.0.min.js"
+		integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="
+		crossorigin="anonymous"></script>
+	<!-- Bootstrap -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+
+</head>
+<body>
+	<div class="container">
+		<div class="row">
+			<div class="col-xs-12 text-center">
+				<br>
+				<h1>Comparison with "3D Ken Burns Effect"</h1>
+				<br>
+			</div>
+		</div>
+		<div>
+			We compare our results (right) with the 3D Ken Burns effect (left):<br>
+			<br>
+			3D Ken Burns Effect from a Single Image<br>
+			Niklaus et al.<br>
+			ACM Transactions on Graphics (Proc SIGGRAPH Asia), 2019<br>
+			<br>
+			The 3D Ken Burns results were generated with the author-provided code.<br>
+			<br>
+		</div>
+		<div class="row">
+			<div class="col-xs-12 text-left">
+				<div class="well well-sm">
+					<form class="form-inline">
+						<div class="form-group">
+							<label for="frame-idx-input">Image <span id="frame-idx">1</span> / <span id="frame-total"></span>&nbsp;</label>
+							<div class="input-group">
+								<span class="input-group-btn">
+									<button class="btn btn-info" type="button" onclick="PrevFrame();"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span></button>
+								</span>
+								<input type="range" class="form-control" id="frame-idx-input" min="1" max="7" step="1" value="1" oninput="ChangeFrame();">
+								<span class="input-group-btn">
+									<button class="btn btn-info" type="button" onclick="NextFrame();"><span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></button>
+								</span>
+							</div>
+						</div>
+					</form>
+					<hr style="margin: 7px;">
+				</div>
+			</div>
+
+			<div class="row" style="margin-top: 2em; display: table; width: 100%" id='output_canvas'>
+			  <div class="large-12 columns" style="text-align: center; display: table-cell; width: 50%;">
+			    <video autoplay muted playsinline id="video_kb" controls="controls" onended="this.currentTime = 0; this.play();" src="./videos/00_ken_burns.mp4" type="video/mp4">
+					<source src="./videos/00_ken_burns.mp4" type="video/mp4">
+				</video><br>
+				3D Ken Burns
+	          </div>
+			  <div class="large-12 columns" style="text-align: center; display: table-cell; width: 50%;">
+			    <video autoplay muted playsinline id="video_ours" controls="controls" onended="this.currentTime = 0; this.play();" src="./videos/00_oneshot.mp4" type="video/mp4">
+			    	<source src="./videos/00_oneshot.mp4" type="video/mp4">
+				</video><br>
+				Oneshot 3D Photography
+			  </div>
+			</div>
+			<br>
+			<br>
+		</div>
+	</div>
+
+	<script
+  src="https://code.jquery.com/jquery-3.2.1.js"
+  integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
+  crossorigin="anonymous"></script>
+    <script src="js/jquery.event.move.js"></script>
+    <script src="js/jquery.twentytwenty.js"></script>
+    <script>
+    $(function(){
+      $(".twentytwenty-container[data-orientation!='vertical']").twentytwenty({default_offset_pct: 0.7});
+      $(".twentytwenty-container[data-orientation='vertical']").twentytwenty({default_offset_pct: 0.3, orientation: 'vertical'});
+    });
+    </script>
+
+	<style type="text/css">
+.container {
+	background-color: #FBFBFC;
+}
+.teaser-img {
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+.img-responsive {
+	margin: auto;
+}
+.comparison-table {
+	table-layout: fixed;
+		word-wrap: break-word;
+}
+.comparison-table th {
+	text-align: center;
+}
+.disabled{
+    pointer-events:none;
+    opacity:0.7;
+}
+.row{
+	min-width: 1060px;
+}
+	</style>
+
+	<script type="text/javascript">
+	var dataset = "Stereo"
+
+	function ChangeFrame(){
+		var frame_idx = parseInt(document.getElementById("frame-idx-input").value);
+		document.getElementById("frame-idx").innerHTML = frame_idx;
+
+		name = frame_idx - 1
+		if (name < 10) {
+			name = "0" + name.toString()
+		} else {
+			name = name.toString()
+		}
+
+		var our_video = document.getElementById('video_ours');
+		var our_timestamp = our_video.currentTime;
+		var our_paused = our_video.paused;
+		our_video.src = "./videos/" + name + "_oneshot.mp4";
+		our_video.currentTime = our_timestamp;
+		if (our_paused) {
+			our_video.pause();
+		} else {
+			our_video.play();
+		}
+
+		var kb_video = document.getElementById('video_kb');
+		var kb_timestamp = kb_video.currentTime;
+		var kb_paused = kb_video.paused;
+		kb_video.src = "./videos/" + name + "_ken_burns.mp4";
+		kb_video.currentTime = our_timestamp;
+		if (kb_paused) {
+			kb_video.pause();
+		} else {
+			kb_video.play();
+		}
+
+		console.log("Change sources to:")
+		console.log("    '" + kb_video.src + "'");
+		console.log("    '" + our_video.src + "'");
+	}
+
+	function NextFrame(){
+		var frame_total = 100;
+		var frame_idx = parseInt(document.getElementById("frame-idx-input").value);
+		if(frame_idx < frame_total){
+			document.getElementById("frame-idx-input").value = frame_idx + 1;
+			ChangeFrame();
+		}
+
+	}
+
+	function PrevFrame(){
+		var frame_idx = parseInt(document.getElementById("frame-idx-input").value);
+		if(frame_idx > 1){
+			document.getElementById("frame-idx-input").value = frame_idx - 1;
+			ChangeFrame();
+		}
+	}
+
+	function ChangeCurrentView(idx){
+	    var li_list = document.getElementById("current-view-ul").children;
+		console.log(idx);
+		console.log(li_list);
+		for(i = 0; i < li_list.length; i++){
+			li_list[i].className = "";
+		}
+		li_list[idx].className = "active";
+		currentView = types[idx];
+		document.getElementById("output_canvas").style.display = 'block';
+		var frame_idx = parseInt(document.getElementById("frame-idx-input").value);
+
+		document.getElementById("video-caption").innerHTML = "&nbsp;";
+
+		ChangeFrame();
+	}
+
+	function ClickInput(){
+	    var frame_idx = parseInt(document.getElementById("frame-idx-input").value);
+
+		document.getElementById("video-caption").innerHTML = "";
+		document.getElementById("method_author").innerHTML = "&nbsp";
+		document.getElementById("method_title").innerHTML = "Input";
+		document.getElementById("method_publication").innerHTML = "&nbsp";
+		document.getElementById("method_remarks").innerHTML = "&nbsp" + "<br />" + "&nbsp";
+		document.getElementById("code_link").href = "";
+		document.getElementById("code_link").innerHTML = "";
+		idx = 0;
+		currentView = types[idx];
+		var li_list = document.getElementById("current-view-ul").children;
+		console.log(idx);
+		console.log(li_list);
+		for(i = 0; i < li_list.length; i++){
+			li_list[i].className = "";
+		}
+		li_list[idx].className = "active";
+		document.getElementById("output_canvas").style.display = 'block';
+		ChangeFrame();
+
+	}
+
+	$(window).on('load', function() {
+
+		document.getElementById("frame-total").innerHTML = 100;
+		document.getElementById("frame-idx-input").value = 1;
+		document.getElementById("frame-idx-input").max = 100;
+
+		// ClickInput();
+	});
+
+
+
+	</script>
+
+
+</body>
+</html>
